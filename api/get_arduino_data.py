@@ -7,9 +7,11 @@ Developer: Aslly Zuñiga
 #Import libraries
 import serial
 import time
+import serial.tools.list_ports
+from detect_arduino_port import p
 
 #Arduino port
-arduino_port = "COM3"
+arduino_port = p
 arduino_bau = 9600
 
 service = serial.Serial(
@@ -25,8 +27,15 @@ while True:
     data = service.readline().decode('utf-8').rstrip()
     
     if data:
-        temperature, humidity = data.split(",")
+        temperature, humidity = data.split(",") 
         
         print(f"Temperature: {temperature} °C")
         print(f"Humidity: {humidity} %")
+        
+        #1. Create a new model data called data test_data
+        #Fields: id, temp, hum, created_at
+        #2. Create a method to insert data into test_data
+        #3. Update method: Insert data when detect changes in temp or hum
+        #Method to insert data in database
+       
     time.sleep(1)
