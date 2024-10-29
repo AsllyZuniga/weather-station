@@ -36,6 +36,8 @@ while True:
         #Fields: id, temp, hum, created_at
         #2. Create a method to insert data into test_data
         #3. Update method: Insert data when detect changes in temp or hum
+        #4. Create a menu option. List sensor data
+        #5. Create a menu option. 
         #Method to insert data in database
        
     time.sleep(1)
