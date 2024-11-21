@@ -1,16 +1,18 @@
-/*Sketch description: Get temperature and humidity from DTH11 Sensor
-Date:19/09/2024
-Developer: Aslly Zuñiga
+/*
+DATE 19/09/2024
+DEVELOPER : Aslly Zuñiga
+SKETCH DESCRIPTION: GET TEMPERATURE AND HUMIDITY FROM DHT 11
 */
-
 #include "DHT.h"
 #define DHTTYPE DHT11
-#define DHTPIN 5
+#define DHTPIN  8
 
-float temperature = 0;
-float humidity = 0;
+
+float temp = 0;
+float hum = 0;
 
 DHT dht(DHTPIN, DHTTYPE);
+
 
 void setup() {
   dht.begin();
@@ -19,77 +21,13 @@ void setup() {
 }
 
 void loop() {
-  delay(2000);
-  temperature =  dht.readTemperature();
-  humidity = dht.readHumidity();
+  delay (2000);
 
-  if(isnan (temperature) || isnan (humidity)){
-    Serial.println("DHT11 reading error");
-    return;
-    
-  }
+temp = dht.readTemperature();
+hum = dht.readHumidity();
 
-
-  Serial.print("Temperatura: ");
-  Serial.println(temperature);
-  Serial.print("Humedad: ");
-  Serial.println(humidity);
-  
+Serial.print(temp);
+Serial.print(",");
+Serial.println(hum);
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-+
