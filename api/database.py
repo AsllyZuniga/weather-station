@@ -42,9 +42,20 @@ sensors_model = '''
         deleted_at NULL
     )
 '''
+
+#Temperature-Humidity
+sensors_data = '''
+CREATE TABLE IF NOT EXISTS sensor_data (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    temperature double precision,
+    humidity double precision,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+'''
 #Execute query
 cur.execute(users_model)
 cur.execute(sensors_model)
+cur.execute(sensors_data)
 
 ##Close connection
 ##con.close()
