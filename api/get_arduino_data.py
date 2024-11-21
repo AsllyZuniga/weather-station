@@ -6,12 +6,21 @@ Developer: Aslly Zuñiga
 '''
 #Import libraries
 import serial
-import time
 import serial.tools.list_ports
+import time
 from detect_arduino_port import p
 
+port = p
+
+
+def  get_arduino_port():
+    ports = serial.tools.list_ports.comports()
+    print(ports)
+    #Con estas lineas se trae los puertos de la PC
+
+
 #Arduino port
-arduino_port = p
+arduino_port = port
 arduino_bau = 9600
 
 service = serial.Serial(
@@ -27,17 +36,18 @@ while True:
     data = service.readline().decode('utf-8').rstrip()
     
     if data:
-        temperature, humidity = data.split(",") 
-        
+        #print(data)
+        temperature, humidity = data.split(",")
         print(f"Temperature: {temperature} °C")
         print(f"Humidity: {humidity} %")
-        
-        #1. Create a new model data called data test_data
-        #Fields: id, temp, hum, created_at
-        #2. Create a method to insert data into test_data
-        #3. Update method: Insert data when detect changes in temp or hum
-        #4. Create a menu option. List sensor data
-        #5. Create a menu option. 
-        #Method to insert data in database
-       
+
+#Aqui el INSERT INTO        
+
+#1. Crear una nuevo modelo de datos (tabla "test_data")
+#Campos necesarios: id, temp, hum, fecha de creacion
+#2. Crear un metodo para insertar datos en la tabla creada "test_data"
+#3. Actualizar metodo (debe cumplir con, si detecta cambios inserta los datos): Los datos insertados detectan cambios en la temp y hum
+#4. Crear un menu de opciones que se llame List sensor data
+#5. Crear un menu de opciones que permita graficar con Matplotlib
+
     time.sleep(1)
