@@ -1,5 +1,6 @@
 import requests
 from supabase import create_client, Client
+from database import con, cur  # Usamos el archivo `database.py` para conexión SQLite.
 
 # Supabase data connection: URL, KEY 
 SUPABASE_URL = "https://epnzrrkcchoyvflmpadc.supabase.co"
@@ -12,8 +13,20 @@ THINGSPEAK_URL = "https://api.thingspeak.com/update"
 # Conectar al cliente de Supabase
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Función para guardar los datos de temperatura y humedad
-def save_sensor_data(temperature, humidity):
+# Función para guardar datos en SQLite
+def save_to_local_db(temperature, humidity):
+    try:
+        cur.execute('''
+        INSERT INTO sensor_data (temperature, humidity)
+        VALUES (?, ?)
+        ''', (temperature, humidity))
+        con.commit()
+        print("Data successfully saved to local database.")
+    except Exception as e:
+        print(f"Error saving data to local database: {e}")
+
+# Función para guardar datos en Supabase
+def save_to_supabase(temperature, humidity):
     response = supabase.table('sensor_data').insert(
         {
             "temperature": temperature,
@@ -21,20 +34,16 @@ def save_sensor_data(temperature, humidity):
         }
     ).execute()
 
-    # Manejo de la respuesta de Supabase
     if response.data:
-        print(f"Sensor data saved successfully: {response.data}")
+        print(f"Sensor data saved successfully to Supabase: {response.data}")
     elif response.error:
-        print(f"Error saving sensor data: {response.error}")
-
-    # Enviar datos a ThingSpeak
-    send_to_thingspeak(temperature, humidity)
+        print(f"Error saving sensor data to Supabase: {response.error}")
 
 # Función para enviar los datos a ThingSpeak
 def send_to_thingspeak(temperature, humidity):
     payload = {
         "api_key": THINGSPEAK_WRITE_KEY,
-        "field1": temperature, 
+        "field1": temperature,
         "field2": humidity     
     }
     try:
@@ -46,7 +55,34 @@ def send_to_thingspeak(temperature, humidity):
     except Exception as e:
         print(f"Exception occurred while sending data to ThingSpeak: {e}")
 
-# Main
-temperature = input("Temperature: ")
-humidity = input("Humidity: ")
-save_sensor_data(temperature, humidity)
+# Función principal para manejar los datos del sensor
+def handle_sensor_data(temperature, humidity):
+    # Guardar en SQLite
+    save_to_local_db(temperature, humidity)
+    # Guardar en Supabase
+    save_to_supabase(temperature, humidity)
+    # Enviar a ThingSpeak
+    send_to_thingspeak(temperature, humidity)
+
+# Simulación: Captura automática de datos del sensor
+def read_sensor_data():
+    # Esta función debería conectarse a tus sensores reales.
+    # Para este ejemplo, generamos datos aleatorios.
+    import random
+    temperature = round(random.uniform(15.0, 35.0), 2)  # Simulación de temperatura
+    humidity = round(random.uniform(30.0, 90.0), 2)     # Simulación de humedad
+    return temperature, humidity
+
+# Main loop: Leer datos y manejarlos
+try:
+    while True:
+        temperature, humidity = read_sensor_data()
+        print(f"Captured Sensor Data -> Temperature: {temperature}, Humidity: {humidity}")
+        handle_sensor_data(temperature, humidity)
+        
+        # Esperar 10 segundos entre lecturas
+        import time
+        time.sleep(10)
+except KeyboardInterrupt:
+    print("Sensor data capture stopped.")
+    con.close()  # Cerrar la conexión SQLite al salir.
